@@ -11,6 +11,7 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write
 
 env:
   REGISTRY: ghcr.io
@@ -19,7 +20,7 @@ env:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -93,3 +94,117 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Configure AWS credentials using OIDC
+        if: github.event_name == 'push'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::244678446741:role/github-actions-drupal-deploy
+          aws-region: eu-north-1
+
+      - name: Deploy Drupal to isolated EC2 staging
+        if: github.event_name == 'push'
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          REMOTE_COMMAND=$(cat <<REMOTE
+          set -eu
+
+          IMAGE="ghcr.io/tarris22/drupal-devops-project:${IMAGE_TAG}"
+
+          echo "Pulling tested Drupal image..."
+          docker pull "\$IMAGE"
+
+          echo "Replacing isolated staging container..."
+          docker rm -f drupal-ci-staging 2>/dev/null || true
+
+          docker run -d \
+            --name drupal-ci-staging \
+            --network drupal-test-net \
+            -p 127.0.0.1:8082:80 \
+            --restart unless-stopped \
+            "\$IMAGE"
+
+          echo "Waiting for container health..."
+
+          HEALTH="starting"
+
+          for i in \$(seq 1 90); do
+            HEALTH=\$(docker inspect \
+              --format='{{.State.Health.Status}}' \
+              drupal-ci-staging 2>/dev/null || true)
+
+            if [ "\$HEALTH" = "healthy" ]; then
+              break
+            fi
+
+            sleep 2
+          done
+
+          if [ "\$HEALTH" != "healthy" ]; then
+            docker logs --tail 50 drupal-ci-staging
+            exit 1
+          fi
+
+          HTTP_STATUS=\$(curl -sS -o /dev/null \
+            -w '%{http_code}' http://127.0.0.1:8082/ || true)
+
+          echo "Staging HTTP status: \$HTTP_STATUS"
+
+          case "\$HTTP_STATUS" in
+            200|302)
+              echo "Drupal staging deployment successful."
+              ;;
+            *)
+              docker logs --tail 50 drupal-ci-staging
+              exit 1
+              ;;
+          esac
+          REMOTE
+          )
+
+          PARAMETERS=$(jq -n --arg command "$REMOTE_COMMAND" \
+            '{commands: [$command]}')
+
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids i-00050ec12a82fd282 \
+            --document-name AWS-RunShellScript \
+            --parameters "$PARAMETERS" \
+            --comment "Deploy Drupal staging image ${IMAGE_TAG}" \
+            --query 'Command.CommandId' \
+            --output text)
+
+          echo "SSM Command ID: $COMMAND_ID"
+
+          for i in {1..60}; do
+            STATUS=$(aws ssm get-command-invocation \
+              --command-id "$COMMAND_ID" \
+              --instance-id i-00050ec12a82fd282 \
+              --query Status \
+              --output text 2>/dev/null || true)
+
+            if [ "$STATUS" = "Success" ]; then
+              break
+            fi
+
+            if [ "$STATUS" = "Failed" ] || \
+               [ "$STATUS" = "Cancelled" ] || \
+               [ "$STATUS" = "TimedOut" ]; then
+              break
+            fi
+
+            sleep 5
+          done
+
+          aws ssm get-command-invocation \
+            --command-id "$COMMAND_ID" \
+            --instance-id i-00050ec12a82fd282 \
+            --query '{Status:Status,Output:StandardOutputContent,Errors:StandardErrorContent}' \
+            --output json
+
+          if [ "$STATUS" != "Success" ]; then
+            echo "Staging deployment failed."
+            exit 1
+          fi
