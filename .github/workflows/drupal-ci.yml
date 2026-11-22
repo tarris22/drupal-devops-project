@@ -19,6 +19,7 @@ env:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
@@ -26,6 +27,52 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Build Drupal image for testing
+        run: docker build -t drupal-ci-test:local .
+
+      - name: Start Drupal test container
+        run: |
+          docker run -d \
+            --name drupal-ci-test \
+            -p 8080:80 \
+            drupal-ci-test:local
+
+      - name: Run Drupal HTTP smoke test
+        run: |
+          echo "Waiting for Drupal to start..."
+
+          for i in {1..45}; do
+            STATUS=$(curl -s -o /dev/null \
+              -w "%{http_code}" http://127.0.0.1:8080/ || true)
+
+            if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
+              break
+            fi
+
+            sleep 2
+          done
+
+          echo "HTTP status: $STATUS"
+
+          if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then
+            docker logs drupal-ci-test
+            exit 1
+          fi
+
+          curl -sSI http://127.0.0.1:8080/ \
+            | grep -i "^Location: /core/install.php" \
+            || {
+              echo "Expected Drupal installer redirect was not found."
+              docker logs drupal-ci-test
+              exit 1
+            }
+
+          echo "Drupal HTTP smoke test passed."
+
+      - name: Clean up test container
+        if: always()
+        run: docker rm -f drupal-ci-test || true
 
       - name: Log in to GitHub Container Registry
         if: github.event_name == 'push'
@@ -35,7 +82,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and validate Drupal image
+      - name: Build and publish Drupal image
         uses: docker/build-push-action@v6
         with:
           context: .
