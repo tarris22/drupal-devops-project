@@ -1,0 +1,20 @@
+
+# Terraform state, plans and secrets
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+
+# Credentials and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials
+
+# Terraform plan files
+tfplan
+*.plan
