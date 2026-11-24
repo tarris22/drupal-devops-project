@@ -1,0 +1,13 @@
+{
+  "name": "nodejs-cloud-deployment",
+  "version": "1.0.0",
+  "description": "Node.js web application for CI/CD assignment",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
