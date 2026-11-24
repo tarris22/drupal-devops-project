@@ -1,0 +1,27 @@
+groups:
+  - name: drupal-infrastructure
+    rules:
+      - alert: DrupalServerDown
+        expr: up{job="drupal-app-servers"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Drupal application server is down
+          description: A Drupal application server is unreachable.
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High CPU usage detected
+
+      - alert: HighMemoryUsage
+        expr: 100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High memory usage detected

@@ -1,0 +1,15 @@
+---
+drupal_root: /var/www/drupal
+drupal_web_root: /var/www/drupal/web
+drupal_files_dir: /var/www/drupal/web/sites/default/files
+
+drupal_efs_id: fs-0316b99c068b4b555
+drupal_efs_region: eu-north-1
+
+apache_service: httpd
+php_fpm_service: php-fpm
+
+php_fpm_max_children: 3
+php_fpm_start_servers: 1
+php_fpm_min_spare_servers: 1
+php_fpm_max_spare_servers: 2

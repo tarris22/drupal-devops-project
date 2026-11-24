@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: Drupal Infrastructure
+    orgId: 1
+    folder: Drupal Monitoring
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

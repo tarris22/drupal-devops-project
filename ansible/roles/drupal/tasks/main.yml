@@ -1,0 +1,24 @@
+---
+- name: Ensure Drupal web root exists
+  file:
+    path: /var/www/drupal/web
+    state: directory
+    owner: apache
+    group: apache
+    mode: '0755'
+
+- name: Ensure Drupal public files directory exists
+  file:
+    path: /var/www/drupal/web/sites/default/files
+    state: directory
+    owner: apache
+    group: apache
+    mode: '0775'
+
+- name: Ensure Drupal private files directory exists
+  file:
+    path: /var/www/drupal/private
+    state: directory
+    owner: apache
+    group: apache
+    mode: '0770'

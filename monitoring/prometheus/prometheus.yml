@@ -1,0 +1,26 @@
+rule_files:
+  - /etc/prometheus/alerts.yml
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+
+  - job_name: drupal-app-servers
+    static_configs:
+      - targets:
+          - 10.20.1.51:9100
+        labels:
+          server: drupal_app_1
+          availability_zone: eu-north-1a
+
+      - targets:
+          - 10.20.2.97:9100
+        labels:
+          server: drupal_app_2
+          availability_zone: eu-north-1b

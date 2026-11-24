@@ -1,0 +1,11 @@
+---
+- name: Configure Drupal application servers
+  hosts: drupal_servers
+  become: true
+  roles:
+    - common
+    - apache
+    - php
+    - drupal
+    - efs
+    - monitoring

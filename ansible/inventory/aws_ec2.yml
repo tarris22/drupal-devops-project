@@ -1,0 +1,20 @@
+---
+plugin: amazon.aws.aws_ec2
+regions:
+  - eu-north-1
+
+filters:
+  instance-state-name: running
+  instance-id:
+    - i-00050ec12a82fd282
+    - i-06788a34f7d982ac3
+
+hostnames:
+  - instance-id
+
+compose:
+  ansible_host: instance_id
+
+keyed_groups:
+  - key: placement.availability_zone
+    prefix: az

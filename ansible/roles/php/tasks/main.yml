@@ -1,0 +1,36 @@
+---
+- name: Install PHP and Drupal dependencies
+  dnf:
+    name:
+      - php
+      - php-cli
+      - php-common
+      - php-fpm
+      - php-mysqlnd
+      - php-gd
+      - php-xml
+      - php-mbstring
+      - php-opcache
+      - php-json
+      - php-curl
+      - php-intl
+      - php-zip
+    state: present
+
+- name: Enable and start PHP-FPM
+  service:
+    name: php-fpm
+    state: started
+    enabled: true
+
+- name: Limit PHP-FPM workers to protect server memory
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^{{ item.key }}\s*='
+    line: '{{ item.key }} = {{ item.value }}'
+  loop:
+    - { key: 'pm.max_children', value: '3' }
+    - { key: 'pm.start_servers', value: '1' }
+    - { key: 'pm.min_spare_servers', value: '1' }
+    - { key: 'pm.max_spare_servers', value: '2' }
+  notify: Restart PHP-FPM

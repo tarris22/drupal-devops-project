@@ -1,0 +1,34 @@
+---
+- name: Inspect existing Drupal application servers
+  hosts: drupal_servers
+  gather_facts: true
+  become: false
+
+  tasks:
+    - name: Display server information
+      ansible.builtin.debug:
+        msg:
+          - "Hostname: {{ ansible_hostname }}"
+          - "Operating System: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "Architecture: {{ ansible_architecture }}"
+          - "Python: {{ ansible_python_version }}"
+
+    - name: Check installed software
+      ansible.builtin.shell: |
+        echo "===== DOCKER ====="
+        docker --version 2>/dev/null || true
+        echo "===== APACHE ====="
+        httpd -v 2>/dev/null || apache2 -v 2>/dev/null || true
+        echo "===== PHP ====="
+        php -v 2>/dev/null | head -n 2 || true
+        echo "===== RUNNING CONTAINERS ====="
+        docker ps --format 'table {{ "{{" }}.Names{{ "}}" }}\t{{ "{{" }}.Image{{ "}}" }}\t{{ "{{" }}.Status{{ "}}" }}' 2>/dev/null || true
+        echo "===== EFS MOUNTS ====="
+        findmnt -t nfs4 || true
+      args:
+        executable: /bin/bash
+      register: inspection
+
+    - name: Display installed software and services
+      ansible.builtin.debug:
+        var: inspection.stdout_lines

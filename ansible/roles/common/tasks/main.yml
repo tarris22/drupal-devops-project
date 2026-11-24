@@ -1,0 +1,19 @@
+---
+- name: Install essential system packages
+  dnf:
+    name:
+      - curl
+      - wget
+      - unzip
+      - git
+      - vim
+      - rsync
+      - tar
+      - chrony
+    state: present
+
+- name: Ensure time synchronization is enabled
+  service:
+    name: chronyd
+    state: started
+    enabled: true

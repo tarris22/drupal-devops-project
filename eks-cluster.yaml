@@ -1,0 +1,36 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: drupal-eks-demo
+  region: eu-north-1
+  tags:
+    Project: Drupal-DevOps
+    Environment: Development
+    ManagedBy: eksctl
+
+vpc:
+  id: vpc-01fb1a68833ebbd87
+  subnets:
+    public:
+      eu-north-1a:
+        id: subnet-0c1b3e1707b3b7ac9
+      eu-north-1b:
+        id: subnet-0863ed36e626917b3
+  clusterEndpoints:
+    publicAccess: true
+    privateAccess: false
+  publicAccessCIDRs:
+    - 16.170.143.138/32
+
+iam:
+  withOIDC: true
+
+managedNodeGroups:
+  - name: drupal-workers
+    instanceType: t3.small
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 1
+    privateNetworking: false
+    volumeSize: 20

@@ -1,0 +1,13 @@
+<VirtualHost *:80>
+    ServerName localhost
+    DocumentRoot /var/www/drupal/web
+
+    <Directory /var/www/drupal/web>
+        AllowOverride All
+        Require all granted
+        Options FollowSymLinks
+    </Directory>
+
+    ErrorLog /var/log/httpd/drupal-error.log
+    CustomLog /var/log/httpd/drupal-access.log combined
+</VirtualHost>

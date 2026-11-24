@@ -1,0 +1,20 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SendCommandsToDrupalStagingOnly",
+      "Effect": "Allow",
+      "Action": "ssm:SendCommand",
+      "Resource": [
+        "arn:aws:ssm:eu-north-1::document/AWS-RunShellScript",
+        "arn:aws:ec2:eu-north-1:244678446741:instance/i-00050ec12a82fd282"
+      ]
+    },
+    {
+      "Sid": "CheckDeploymentCommand",
+      "Effect": "Allow",
+      "Action": "ssm:GetCommandInvocation",
+      "Resource": "*"
+    }
+  ]
+}

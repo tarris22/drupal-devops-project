@@ -1,0 +1,11 @@
+---
+- name: Install Node Exporter
+  dnf:
+    name: prometheus-node-exporter
+    state: present
+
+- name: Enable and start Node Exporter
+  service:
+    name: prometheus-node-exporter
+    state: started
+    enabled: true

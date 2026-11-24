@@ -18,3 +18,11 @@ credentials
 # Terraform plan files
 tfplan
 *.plan
+
+# Terraform local and crash files
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

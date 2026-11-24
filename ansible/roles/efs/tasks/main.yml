@@ -1,0 +1,21 @@
+---
+- name: Install EFS mount helper
+  dnf:
+    name: amazon-efs-utils
+    state: present
+
+- name: Ensure Drupal files mount directory exists
+  file:
+    path: /var/www/drupal/web/sites/default/files
+    state: directory
+    owner: apache
+    group: apache
+    mode: '0775'
+
+- name: Mount shared EFS storage
+  mount:
+    path: /var/www/drupal/web/sites/default/files
+    src: fs-0316b99c068b4b555:/
+    fstype: efs
+    opts: _netdev,tls
+    state: mounted

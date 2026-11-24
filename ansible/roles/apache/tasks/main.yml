@@ -1,0 +1,27 @@
+---
+- name: Install Apache web server
+  dnf:
+    name: httpd
+    state: present
+
+- name: Enable and start Apache
+  service:
+    name: httpd
+    state: started
+    enabled: true
+
+- name: Deploy Drupal Apache virtual host
+  template:
+    src: drupal.conf.j2
+    dest: /etc/httpd/conf.d/drupal.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Apache
+
+- name: Enable Apache rewrite module
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    line: 'LoadModule rewrite_module modules/mod_rewrite.so'
+    state: present
+  notify: Restart Apache

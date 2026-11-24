@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drupal-web
+  namespace: drupal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: drupal-web
+  template:
+    metadata:
+      labels:
+        app: drupal-web
+    spec:
+      containers:
+        - name: drupal
+          image: ghcr.io/tarris22/drupal-devops-project:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: DRUPAL_DB_HOST
+              value: drupal-devops-mysql.cngwiue20iwe.eu-north-1.rds.amazonaws.com
+            - name: DRUPAL_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: drupal-db-secret
+                  key: database
+            - name: DRUPAL_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: drupal-db-secret
+                  key: username
+            - name: DRUPAL_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: drupal-db-secret
+                  key: password
+            - name: DRUPAL_HASH_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: drupal-db-secret
+                  key: hash-salt
+          volumeMounts:
+            - name: drupal-settings
+              mountPath: /var/www/html/sites/default/settings.php
+              subPath: settings.php
+              readOnly: true
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          readinessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 20
+      volumes:
+        - name: drupal-settings
+          configMap:
+            name: drupal-settings

@@ -1,0 +1,29 @@
+---
+- name: Deploy Drupal application configuration
+  hosts: drupal_servers
+  become: true
+  serial: 1
+
+  tasks:
+    - name: Set Apache ownership on Drupal files
+      file:
+        path: /var/www/drupal
+        owner: apache
+        group: apache
+        recurse: true
+
+    - name: Ensure Drupal settings directory permissions
+      file:
+        path: /var/www/drupal/web/sites/default
+        state: directory
+        owner: apache
+        group: apache
+        mode: '0755'
+
+    - name: Ensure Drupal public files permissions
+      file:
+        path: /var/www/drupal/web/sites/default/files
+        state: directory
+        owner: apache
+        group: apache
+        mode: '0775'
