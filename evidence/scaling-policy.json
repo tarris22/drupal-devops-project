@@ -1,0 +1,29 @@
+{
+    "ScalingPolicies": [
+        {
+            "AutoScalingGroupName": "drupal-ha-asg",
+            "PolicyName": "drupal-cpu-target-tracking",
+            "PolicyARN": "arn:aws:autoscaling:eu-north-1:244678446741:scalingPolicy:85ee5daa-e256-4bc6-ac38-3802f0e94be8:autoScalingGroupName/drupal-ha-asg:policyName/drupal-cpu-target-tracking",
+            "PolicyType": "TargetTrackingScaling",
+            "StepAdjustments": [],
+            "Alarms": [
+                {
+                    "AlarmName": "TargetTracking-drupal-ha-asg-AlarmHigh-284e08a3-c8b7-41a1-8d95-88db4a1b0307",
+                    "AlarmARN": "arn:aws:cloudwatch:eu-north-1:244678446741:alarm:TargetTracking-drupal-ha-asg-AlarmHigh-284e08a3-c8b7-41a1-8d95-88db4a1b0307"
+                },
+                {
+                    "AlarmName": "TargetTracking-drupal-ha-asg-AlarmLow-786d9193-8bdb-463c-ba96-4fd46161354f",
+                    "AlarmARN": "arn:aws:cloudwatch:eu-north-1:244678446741:alarm:TargetTracking-drupal-ha-asg-AlarmLow-786d9193-8bdb-463c-ba96-4fd46161354f"
+                }
+            ],
+            "TargetTrackingConfiguration": {
+                "PredefinedMetricSpecification": {
+                    "PredefinedMetricType": "ASGAverageCPUUtilization"
+                },
+                "TargetValue": 50.0,
+                "DisableScaleIn": false
+            },
+            "Enabled": true
+        }
+    ]
+}

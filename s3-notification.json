@@ -1,0 +1,9 @@
+{
+  "LambdaFunctionConfigurations": [
+    {
+      "Id": "drupal-upload-created-trigger",
+      "LambdaFunctionArn": "arn:aws:lambda:eu-north-1:244678446741:function:drupal-s3-upload-processor",
+      "Events": ["s3:ObjectCreated:*"]
+    }
+  ]
+}

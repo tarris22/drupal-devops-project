@@ -1,0 +1,28 @@
+{
+    "TargetGroups": [
+        {
+            "TargetGroupArn": "arn:aws:elasticloadbalancing:eu-north-1:244678446741:targetgroup/drupal-devops-tg/b1e02e50a9e0722e",
+            "TargetGroupName": "drupal-devops-tg",
+            "Protocol": "HTTP",
+            "Port": 80,
+            "VpcId": "vpc-01fb1a68833ebbd87",
+            "HealthCheckProtocol": "HTTP",
+            "HealthCheckPort": "traffic-port",
+            "HealthCheckEnabled": true,
+            "HealthCheckIntervalSeconds": 30,
+            "HealthCheckTimeoutSeconds": 5,
+            "HealthyThresholdCount": 2,
+            "UnhealthyThresholdCount": 3,
+            "HealthCheckPath": "/",
+            "Matcher": {
+                "HttpCode": "200-399"
+            },
+            "LoadBalancerArns": [
+                "arn:aws:elasticloadbalancing:eu-north-1:244678446741:loadbalancer/app/drupal-devops-alb/e6142b3a5c4615ad"
+            ],
+            "TargetType": "instance",
+            "ProtocolVersion": "HTTP1",
+            "IpAddressType": "ipv4"
+        }
+    ]
+}

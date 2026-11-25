@@ -1,0 +1,34 @@
+{
+    "LoadBalancers": [
+        {
+            "LoadBalancerArn": "arn:aws:elasticloadbalancing:eu-north-1:244678446741:loadbalancer/app/drupal-devops-alb/e6142b3a5c4615ad",
+            "DNSName": "drupal-devops-alb-41928326.eu-north-1.elb.amazonaws.com",
+            "CanonicalHostedZoneId": "Z23TAZ6LKFMNIO",
+            "CreatedTime": "2026-11-22T13:22:07.667000+00:00",
+            "LoadBalancerName": "drupal-devops-alb",
+            "Scheme": "internet-facing",
+            "VpcId": "vpc-01fb1a68833ebbd87",
+            "State": {
+                "Code": "active"
+            },
+            "Type": "application",
+            "AvailabilityZones": [
+                {
+                    "ZoneName": "eu-north-1b",
+                    "SubnetId": "subnet-0863ed36e626917b3",
+                    "LoadBalancerAddresses": []
+                },
+                {
+                    "ZoneName": "eu-north-1a",
+                    "SubnetId": "subnet-0c1b3e1707b3b7ac9",
+                    "LoadBalancerAddresses": []
+                }
+            ],
+            "SecurityGroups": [
+                "sg-0f6ed11bbf87f1026"
+            ],
+            "IpAddressType": "ipv4",
+            "EnablePrefixForIpv6SourceNat": "off"
+        }
+    ]
+}

@@ -1,0 +1,88 @@
+{
+    "AutoScalingGroups": [
+        {
+            "AutoScalingGroupName": "drupal-ha-asg",
+            "AutoScalingGroupARN": "arn:aws:autoscaling:eu-north-1:244678446741:autoScalingGroup:4e1603e8-df3e-4b8b-8221-b454162f55de:autoScalingGroupName/drupal-ha-asg",
+            "LaunchTemplate": {
+                "LaunchTemplateId": "lt-0b786506b77a110d7",
+                "LaunchTemplateName": "drupal-ha-asg-template",
+                "Version": "1"
+            },
+            "MinSize": 1,
+            "MaxSize": 2,
+            "DesiredCapacity": 1,
+            "DefaultCooldown": 300,
+            "AvailabilityZones": [
+                "eu-north-1b",
+                "eu-north-1a"
+            ],
+            "AvailabilityZoneIds": [
+                "eun1-az2",
+                "eun1-az1"
+            ],
+            "LoadBalancerNames": [],
+            "TargetGroupARNs": [
+                "arn:aws:elasticloadbalancing:eu-north-1:244678446741:targetgroup/drupal-devops-tg/b1e02e50a9e0722e"
+            ],
+            "HealthCheckType": "ELB",
+            "HealthCheckGracePeriod": 180,
+            "Instances": [
+                {
+                    "InstanceId": "i-0e1d9a0a10e332353",
+                    "InstanceType": "t3.micro",
+                    "AvailabilityZone": "eu-north-1b",
+                    "AvailabilityZoneId": "eun1-az2",
+                    "LifecycleState": "InService",
+                    "HealthStatus": "Healthy",
+                    "LaunchTemplate": {
+                        "LaunchTemplateId": "lt-0b786506b77a110d7",
+                        "LaunchTemplateName": "drupal-ha-asg-template",
+                        "Version": "1"
+                    },
+                    "ProtectedFromScaleIn": false
+                },
+                {
+                    "InstanceId": "i-0fc15a2aefc66c7c8",
+                    "InstanceType": "t3.micro",
+                    "AvailabilityZone": "eu-north-1b",
+                    "AvailabilityZoneId": "eun1-az2",
+                    "LifecycleState": "Terminating",
+                    "HealthStatus": "Unhealthy",
+                    "LaunchTemplate": {
+                        "LaunchTemplateId": "lt-0b786506b77a110d7",
+                        "LaunchTemplateName": "drupal-ha-asg-template",
+                        "Version": "1"
+                    },
+                    "ProtectedFromScaleIn": false
+                }
+            ],
+            "CreatedTime": "2026-11-24T23:48:24.779000+00:00",
+            "SuspendedProcesses": [],
+            "VPCZoneIdentifier": "subnet-0863ed36e626917b3,subnet-0c1b3e1707b3b7ac9",
+            "EnabledMetrics": [],
+            "Tags": [],
+            "TerminationPolicies": [
+                "Default"
+            ],
+            "NewInstancesProtectedFromScaleIn": false,
+            "ServiceLinkedRoleARN": "arn:aws:iam::244678446741:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
+            "TrafficSources": [
+                {
+                    "Identifier": "arn:aws:elasticloadbalancing:eu-north-1:244678446741:targetgroup/drupal-devops-tg/b1e02e50a9e0722e",
+                    "Type": "elbv2"
+                }
+            ],
+            "AvailabilityZoneDistribution": {
+                "CapacityDistributionStrategy": "balanced-best-effort"
+            },
+            "CapacityReservationSpecification": {
+                "CapacityReservationPreference": "default"
+            },
+            "InstanceLifecyclePolicy": {
+                "RetentionTriggers": {
+                    "TerminateHookAbandon": "terminate"
+                }
+            }
+        }
+    ]
+}
